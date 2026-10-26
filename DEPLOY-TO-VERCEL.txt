@@ -1,0 +1,29 @@
+IDM ESWATINI WEBSITE ON VERCEL + NEON POSTGRES
+==============================================
+One code base, two databases:
+  - Vercel (cloud): Neon PostgreSQL, Vercel's own database. File: database/idm_eswatini_website.pgsql.sql
+  - XAMPP / any PHP host with phpMyAdmin: MySQL. File: database/idm_eswatini_website.sql
+Both files hold the same tables and data. Every form on the website (applications, documents, enquiries,
+bookings, alumni, training requests, job applications, newsletter, staff portals) saves to whichever database is connected.
+
+1. Create the database (once)
+   Vercel > your project idm-eswatini-website > Storage > Create Database > Neon (Postgres) > Connect to the project.
+   Vercel then adds DATABASE_URL to the project automatically.
+
+2. Environment variables (Project > Settings > Environment Variables), enter them yourself:
+   IDM_STORAGE    = db     (documents, photos and logins are kept in the database)
+   IDM_BASE_PATH  = /
+   IDM_ENC_KEY    = the text inside inc\secret.key of the XAMPP site. It MUST be the same key, otherwise the
+                    encrypted personal data in the database cannot be read. Never share it.
+   IDM_SETUP_TOKEN = any long random word (protects the installer)
+   optional email: IDM_MAIL_HOST, IDM_MAIL_PORT, IDM_MAIL_SECURE, IDM_MAIL_USER, IDM_MAIL_PASS, IDM_MAIL_FROM
+
+3. Deploy this _vercel-deploy folder with vercel.json (the vercel-php runtime runs the PHP; a drag-and-drop
+   "drop" upload only publishes static files, so never use that):
+     npx vercel@latest link --yes --project idm-eswatini-website
+     npx vercel@latest deploy --prod
+
+4. Install the data: open  https://<your-site>/api/install.php?token=<IDM_SETUP_TOKEN>  and click "Install now".
+   It loads database/idm_eswatini_website.pgsql.sql into Neon, copies the documents and photos, then locks itself.
+
+The PHP program code is never sent to browsers: Vercel runs it on the server, and app/, inc/ and database/ are blocked.

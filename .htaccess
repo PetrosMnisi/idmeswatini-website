@@ -1,0 +1,50 @@
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+DirectoryIndex index.html index.php
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always unset X-Powered-By
+  <FilesMatch "\.html?$">
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'self' blob: https://www.google.com https://maps.google.com; object-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+  </FilesMatch>
+</IfModule>
+ServerSignature Off
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# Folders whose names start with "_" (backups, drafts) are never served.
+<IfModule mod_alias.c>
+  RedirectMatch 404 "/_[^/]+/"
+  RedirectMatch 404 "/(app|inc|database|private_docs|Claude outputs)/"
+</IfModule>
+# Protect internal files: notes, backups, sample data and setup are never served to the public.
+<FilesMatch "(?i)(\.(txt|md|sql|bak|json|log|ini|sqlite|csv|key|pem|tgz|zip|py|sh|enc-tmp|config|lock|dist)$|\.before|^_|^README|^\.)">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+<Files "robots.txt">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Allow from all
+  </IfModule>
+</Files>
+<IfModule mod_headers.c>
+  <FilesMatch "\.php$">
+    Header set Cache-Control "no-store"
+  </FilesMatch>
+</IfModule>

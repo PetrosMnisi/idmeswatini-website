@@ -1,0 +1,47 @@
+{
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.7.4",
+      "maxDuration": 60,
+      "excludeFiles": "{docs/**,images/**,_backup/**,_drafts/**,_to_delete/**}"
+    }
+  },
+  "routes": [
+    {
+      "src": "/(app|inc|database|private_docs|_backup|_drafts|_to_delete|Claude%20outputs|Claude outputs)(/.*)?",
+      "status": 404,
+      "dest": "/404.html"
+    },
+    {
+      "src": "/((?!robots\\.txt$).*\\.txt|.*\\.sql|.*\\.tgz|web\\.config|vercel\\.json|\\.htaccess|\\.vercelignore|\\.gitignore|api/php\\.ini)",
+      "status": 404,
+      "dest": "/404.html"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "/api/file.php?k=uploads/$1"
+    },
+    {
+      "src": "/(admin-users|api|applicant-login|applicant-password|change-password|data|hod-login|intranet|intranet-api|library-admin|login|processing|setup)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin"
+      }
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "status": 404,
+      "dest": "/404.html"
+    }
+  ]
+}

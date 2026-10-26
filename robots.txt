@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /app/
+Disallow: /inc/
+Disallow: /database/
+Disallow: /private_docs/
+Disallow: /uploads/
+Allow: /

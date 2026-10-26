@@ -1,0 +1,15 @@
+# Nginx hosting (no .htaccess support): add these lines inside your site's "server { }" block,
+# ABOVE your existing "location ~ \.php$ { ... }" block.
+index index.html index.php;
+location ~ "/(app|inc|database|private_docs|_[^/]+|Claude outputs)/" { deny all; return 404; }
+location = /robots.txt { allow all; }
+location ~ /\. { deny all; return 404; }
+location ~* (^|/)(web\.config|vercel\.json|README[^/]*)$ { deny all; return 404; }
+location ~* \.(sql|key|txt|md|bak|tgz|zip|log|py|sh|json|ini|csv)$ { deny all; return 404; }
+location ~* ^/uploads/.*\.(php|phtml|phar|pl|py|cgi|sh|html?|js)$ { deny all; return 404; }
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+server_tokens off;
+client_max_body_size 25m;
